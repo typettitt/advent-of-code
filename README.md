@@ -1,1 +1,2 @@
-# advent_of_code_2020
+# My Advent of Code Solutions
+This repository contains my solutions for advent of code problems. Click [here](https://adventofcode.com/ "Advent of Code") to check out advent of code for yourself.
