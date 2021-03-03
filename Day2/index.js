@@ -1,55 +1,64 @@
-const fs = require('fs')
+function validatePasswordsPart1(){
+  var policiesArr = [];
+  var lineReader = require('readline').createInterface({
+  input: require('fs').createReadStream('payload.txt')
+  });
 
-function xor(a,b) {
-  return ( a || b ) && !( a && b );
-}
+  lineReader.on('line', function (line) {
+    policiesArr.push(line);
+  });
 
-const file = fs.readFileSync('payload.txt').toString('utf8');
-
-const passwords = file.split('\n')
-  .map(line => {
-    cols = line.split(' ')
-    return {
-      min: line.split(' ')[0].split('-')[0],
-      max: line.split(' ')[0].split('-')[1],
-      char: String(line.split(' ')[1]).charAt(0),
-      password: line.split(' ')[2] ? String(line.split(' ')[2]) : undefined,
+  lineReader.on('close', function (line) {
+    var validPasswords = 0;
+    for (var i = 0; i < policiesArr.length; i++) {
+       var policyMin = parseInt(policiesArr[i].substring(0, policiesArr[i].indexOf('-')));
+      var policyMax = parseInt(policiesArr[i].substring(policiesArr[i].indexOf('-')+1, policiesArr[i].indexOf(' ')));
+      var policyCharacter = policiesArr[i].substring(policiesArr[i].indexOf(':')-1, policiesArr[i].indexOf(':'));
+      var password = policiesArr[i].substring(policiesArr[i].indexOf(':')+1, policiesArr[i].length);
+      var charCountInPassword = password.split(policyCharacter).length-1;
+      if( charCountInPassword >= policyMin && charCountInPassword <= policyMax){
+        validPasswords++;
+        console.log(policiesArr[i], charCountInPassword, 'Valid');
+      }else{
+        console.log(policiesArr[i], charCountInPassword, 'Invalid');
+      }
     }
-  })
-  .filter(password => typeof password.password !== 'undefined')
+    console.log('Total passwords: '+ policiesArr.length);
+    console.log('Number of valid passwords: '+ validPasswords);
+  });
+}
+function validatePasswordsPart2(){
+  var policiesArr = [];
+  var lineReader = require('readline').createInterface({
+  input: require('fs').createReadStream('payload.txt')
+  });
 
+  lineReader.on('line', function (line) {
+    policiesArr.push(line);
+  });
 
-let numValidPart1 = 0;
-
-for (let i=0; i < passwords.length; i++) {
-  const password = passwords[i].password
-  const char = passwords[i].char
-  const min = passwords[i].min
-  const max = passwords[i].max
-  let matchingChars = 0;
-  for (let p=0; p < password.length; p++) {
-    if (password.charAt(p).toString() == char) {
-      matchingChars++;
+  lineReader.on('close', function (line) {
+    var validPasswords = 0;
+    for (var i = 0; i < policiesArr.length; i++) {
+      var policyMin = parseInt(policiesArr[i].substring(0, policiesArr[i].indexOf('-')));
+      var policyMax = parseInt(policiesArr[i].substring(policiesArr[i].indexOf('-')+1, policiesArr[i].indexOf(' ')));
+      var policyCharacter = policiesArr[i].substring(policiesArr[i].indexOf(':')-1, policiesArr[i].indexOf(':'));
+      var password = policiesArr[i].substring(policiesArr[i].indexOf(':')+1, policiesArr[i].length);
+      var passwordCharacterAtMin = password.substring(policyMin, policyMin+1);
+      var passwordCharacterAtMax = password.substring(policyMax, policyMax+1);
+      if(passwordCharacterAtMin == policyCharacter && passwordCharacterAtMax != policyCharacter){
+        validPasswords++;
+        console.log(policiesArr[i], 'Valid');
+      }else if(passwordCharacterAtMin != policyCharacter && passwordCharacterAtMax == policyCharacter){
+        validPasswords++;
+        console.log(policiesArr[i], 'Valid');
+      }else{
+        console.log(policiesArr[i], 'Invalid');
+      }
     }
-  }
-  if (matchingChars >= min && matchingChars <= max) {
-    numValidPart1++
-  }
+    console.log('Total passwords: '+ policiesArr.length);
+    console.log('Number of valid passwords: '+ validPasswords);
+  });
 }
-
-console.log('Valid passwords (part 1):', numValidPart1);
-
-let numValidPart2 = 0;
-
-for (let i=0; i < passwords.length; i++) {
-  const password = passwords[i].password
-  const char = passwords[i].char
-  const index1 = passwords[i].min - 1
-  const index2 = passwords[i].max - 1
-  if (xor(password.charAt(index1).toString() == char,
-          password.charAt(index2).toString() == char)) {
-    numValidPart2++;
-  }
-}
-
-console.log('Valid passwords (part 2):', numValidPart2);
+  validatePasswordsPart1();
+  validatePasswordsPart2();
