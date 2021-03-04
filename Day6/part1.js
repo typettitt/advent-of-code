@@ -2,24 +2,27 @@ const fs = require('fs')
 
 const file = fs.readFileSync('payload.txt').toString('utf8');
 
-const groups = file.split('\n\n').filter(line => line.length > 0)
+const groups = file.split('\n\n')
+  .filter(line => line.length > 0)
+  .map(groupString => {
+    return groupString.split('\n')
+      .filter(line => line.length > 0)
+      .map(personString => {
+        return personString.split('')
+      })
+  })
 
-var partOne = 0;
-groups.filter(group =>countAnswers(group));
+const unifiedAnswers = groups
+  .map(group => [...new Set(group.flat(1))])
 
-console.log('Part 1: ' + partOne);
+const intersectedAnswers = groups
+  .map(group => group.reduce((a, b) => a.filter(c => b.includes(c))))
 
-function countAnswers(group){
-  let uniqueArr = [];
-  for (var i = 0; i < group.length; i++){
-    let question = group.charAt(i);
-    if(question != '\n'){
-      if(!uniqueArr.includes(question)){
-        uniqueArr.push(question);
-      }
-    } 
-    if(i === group.length -1){
-      partOne += uniqueArr.length;
-    }
-  }
+console.log("Sum of size of union of answers (part 1) =", getSumOfCounts(unifiedAnswers))
+console.log("Sum of size of intersection of answers (part 2) =", getSumOfCounts(intersectedAnswers))
+
+function getSumOfCounts(answers) {
+  return answers
+    .map(groupAnswers => Object.keys(groupAnswers).length)
+    .reduce((a, b) => a + b, 0)
 }
