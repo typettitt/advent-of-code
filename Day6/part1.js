@@ -18,8 +18,8 @@ const unifiedAnswers = groups
 const intersectedAnswers = groups
   .map(group => group.reduce((a, b) => a.filter(c => b.includes(c))))
 
-console.log("Sum of size of union of answers (part 1) =", getSumOfCounts(unifiedAnswers))
-console.log("Sum of size of intersection of answers (part 2) =", getSumOfCounts(intersectedAnswers))
+console.log("Part 1: ", getSumOfCounts(unifiedAnswers))
+console.log("Part 2: ", getSumOfCounts(intersectedAnswers))
 
 function getSumOfCounts(answers) {
   return answers
